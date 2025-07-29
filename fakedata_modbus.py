@@ -1,10 +1,14 @@
 from pymodbus.server import StartTcpServer
-from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
-from pymodbus.datastore import ModbusSequentialDataBlock
+from pymodbus.datastore import ModbusSequentialDataBlock, ModbusDeviceContext, ModbusServerContext
 
-store = ModbusSlaveContext(
-    hr=ModbusSequentialDataBlock(0, [55, 67, 78])  # 3 values
-)
-context = ModbusServerContext(slaves=store, single=True)
+# Create data block
+data_block = ModbusSequentialDataBlock(0, [65, 72, 88])  # Holding registers
 
-StartTcpServer(context, address=("0.0.0.0", 502))
+
+device_context = ModbusDeviceContext(hr=data_block)
+
+
+server_context = ModbusServerContext(devices={1: device_context}, single=False)
+
+# Start the TCP server
+StartTcpServer(server_context, address=("0.0.0.0", 5020))
