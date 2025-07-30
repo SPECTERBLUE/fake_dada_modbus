@@ -1,14 +1,23 @@
-from pymodbus.server import StartTcpServer
-from pymodbus.datastore import ModbusSequentialDataBlock, ModbusDeviceContext, ModbusServerContext
+from pymodbus.server.sync import StartTcpServer
+from pymodbus.datastore import ModbusSequentialDataBlock
+from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 
-# Create data block
-data_block = ModbusSequentialDataBlock(0, [65, 72, 88])  # Holding registers
+def run_server():
+    # Initialize data block - method differs in 2.5.3
+    block = ModbusSequentialDataBlock(0, [65, 72] + [0]*98)  # First two registers = 65, 72
+    
+    # Create slave context (device_id=1)
+    store = ModbusSlaveContext(
+        hr=block,  # Holding registers
+        zero_mode=True  # Important for 0-based addressing
+    )
+    
+    context = ModbusServerContext(slaves={1: store}, single=False)
+    
+    print("Starting Modbus server on 0.0.0.0:5020")
+    print("Initial registers:", block.getValues(0, 2))  # Should show [65, 72]
+    
+    StartTcpServer(context, address=("0.0.0.0", 5020))
 
-
-device_context = ModbusDeviceContext(hr=data_block)
-
-
-server_context = ModbusServerContext(devices={1: device_context}, single=False)
-
-# Start the TCP server
-StartTcpServer(server_context, address=("0.0.0.0", 5020))
+if __name__ == "__main__":
+    run_server()
