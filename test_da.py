@@ -4,7 +4,7 @@ def run_client():
     client = ModbusTcpClient('localhost', port=5020)
     
     # Try both address 0 and 1 (addressing differs between implementations)
-    for address in [0, 1]:
+    for address in [0]:
         response = client.read_holding_registers(
             address=address,
             count=2,

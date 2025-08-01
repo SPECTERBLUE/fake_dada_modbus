@@ -4,7 +4,7 @@ from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 
 def run_server():
     # Initialize data block - method differs in 2.5.3
-    block = ModbusSequentialDataBlock(0, [65, 72] + [0]*98)  # First two registers = 65, 72
+    block = ModbusSequentialDataBlock(0, [65, 72])  # First two registers = 65, 72
     
     # Create slave context (device_id=1)
     store = ModbusSlaveContext(
